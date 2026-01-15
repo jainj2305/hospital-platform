@@ -152,38 +152,7 @@ mvn clean package -DskipTests
 ```bash
 docker-compose up
 ```
-
-### 3. Verify
-
-```bash
-curl http://localhost:8081/actuator/health
-```
-
 ---
-
-## 🧪 Live Demo Checklist (Interview)
-
-* [ ] docker-compose up
-* [ ] Show service startup
-* [ ] Book appointment
-* [ ] Show Kafka event flow
-* [ ] Generate bill
-* [ ] Process payment
-* [ ] Demonstrate idempotency
-* [ ] Kill a service & show graceful failure
-
----
-
-## ⚖️ Assumptions & Trade-offs
-
-* REST used for synchronous validation (simplicity)
-* No centralized auth server (JWT shared secret)
-* Kafka used only for async workflows
-
-Trade-offs favor **clarity & correctness** over over-engineering.
-
----
-
 
 ## ✅ Conclusion
 
