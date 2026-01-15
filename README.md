@@ -1,4 +1,4 @@
-# 🏥 Hospital Billing & Appointment Platform
+# Design & Implement a Fault-Tolerant Hospital Billing & Appointment Platform
 
 ## 📌 Overview
 
