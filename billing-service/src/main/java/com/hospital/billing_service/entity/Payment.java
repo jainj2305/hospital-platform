@@ -36,4 +36,15 @@ public class Payment {
         SUCCESS,
         FAILED
     }
+
+    @Override
+    public String toString() {
+        return "Payment {" +
+                "id=" + id +
+                ", billId='" + billId + '\'' +
+                ", amount='" + amount + '\'' +
+                ", key=" + idempotencyKey +
+                ", status=" + status +
+                '}';
+    }
 }

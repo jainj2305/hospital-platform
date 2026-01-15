@@ -10,19 +10,19 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
 
     public void sendBillNotification(BillGeneratedEvent event) {
-        System.out.println("📄 Bill generated for appointment "
+        System.out.println("Bill generated for appointment "
                 + event.appointmentId()
                 + ", amount: " + event.totalAmount());
     }
 
     public void sendPaymentSuccess(PaymentCompletedEvent event) {
-        System.out.println("✅ Payment successful for bill "
+        System.out.println("Payment successful for bill "
                 + event.billId()
                 + ", amount: " + event.amount());
     }
 
     public void sendPaymentFailure(PaymentFailedEvent event) {
-        System.out.println("❌ Payment failed for bill "
+        System.out.println("Payment failed for bill "
                 + event.billId()
                 + ", reason: " + event.reason());
     }

@@ -1,7 +1,8 @@
-package com.hospital.appointment_service.exception;
+package com.hospital.billing_service.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -10,9 +11,9 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(SlotAlreadyBookedException.class)
+    @ExceptionHandler(OverpaymentException.class)
     public ResponseEntity<Map<String, String>> handleAlreadyBooked(
-            SlotAlreadyBookedException ex) {
+            OverpaymentException ex) {
 
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("error", ex.getMessage()));
@@ -24,5 +25,13 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(DuplicatePaymentException.class)
+    public ResponseEntity<Map<String, String>> handleConflicts(
+            DuplicatePaymentException ex) {
+
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("error", ex.getMessage(), "Object", ex.getDetails().toString()));
     }
 }

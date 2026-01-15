@@ -1,12 +1,13 @@
 package com.hospital.appointment_service.service;
 
+import com.hospital.appointment_service.clients.PatientServiceClient;
 import com.hospital.appointment_service.dto.AppointmentRequest;
+import com.hospital.appointment_service.dto.AppointmentResponse;
 import com.hospital.appointment_service.entity.Appointment;
 import com.hospital.appointment_service.event.AppointmentEvent;
+import com.hospital.appointment_service.exception.ResourceNotFoundException;
 import com.hospital.appointment_service.exception.SlotAlreadyBookedException;
 import com.hospital.appointment_service.repository.AppointmentRepository;
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,15 @@ public class AppointmentService {
     @Autowired
     private KafkaTemplate<String, AppointmentEvent> kafkaTemplate;
 
-    public Appointment bookAppointment(AppointmentRequest request) {
+    @Autowired
+    private PatientServiceClient patientServiceClient;
+
+    public AppointmentResponse bookAppointment(AppointmentRequest request) {
         System.out.println(">>> BOOK APPOINTMENT METHOD HIT <<<");
         log.info("bookAppointment() invoked");
+
+        // Validate patientId
+        patientServiceClient.validatePatient(request.getPatientId());
 
         if (repository.existsByDoctorIdAndAppointmentTime(
                 request.getDoctorId(), request.getAppointmentTime())) {
@@ -63,15 +70,26 @@ public class AppointmentService {
                     }
                 });
 
-        return saved;
+        return convertToAppointmentResponse(saved);
     }
 
-    public Appointment get(UUID id) {
+    private AppointmentResponse convertToAppointmentResponse(Appointment appointment) {
+        AppointmentResponse response = new AppointmentResponse();
+        response.setId(appointment.getId());
+        response.setDoctorId(appointment.getDoctorId());
+        response.setPatientId(appointment.getPatientId());
+        response.setStatus(appointment.getStatus());
+        response.setAppointmentTime(appointment.getAppointmentTime());
+        return response;
+    }
+
+    public AppointmentResponse get(UUID id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+                .map(this::convertToAppointmentResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id: " + id));
     }
 
-    public List<Appointment> getAllAppointments() {
-        return repository.findAll();
+    public List<AppointmentResponse> getAllAppointments() {
+        return repository.findAll().stream().map(this::convertToAppointmentResponse).toList();
     }
 }
