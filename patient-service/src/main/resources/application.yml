@@ -22,3 +22,8 @@ management:
     web:
       exposure:
         include: health,metrics
+
+security:
+  jwt:
+    secret: hospital-secret-key-123456789
+    expiration: 3600000 # 1 hour

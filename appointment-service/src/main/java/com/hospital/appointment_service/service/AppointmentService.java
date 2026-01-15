@@ -3,6 +3,7 @@ package com.hospital.appointment_service.service;
 import com.hospital.appointment_service.dto.AppointmentRequest;
 import com.hospital.appointment_service.entity.Appointment;
 import com.hospital.appointment_service.event.AppointmentEvent;
+import com.hospital.appointment_service.exception.SlotAlreadyBookedException;
 import com.hospital.appointment_service.repository.AppointmentRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
@@ -32,7 +33,7 @@ public class AppointmentService {
 
         if (repository.existsByDoctorIdAndAppointmentTime(
                 request.getDoctorId(), request.getAppointmentTime())) {
-            throw new RuntimeException("Doctor already booked");
+            throw new SlotAlreadyBookedException("Doctor already booked");
         }
 
         Appointment appointment = new Appointment();
