@@ -22,17 +22,19 @@ spring:
       group-id: notification-group
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
         spring.json.trusted.packages: "*"
-
-  logging:
-    level:
-      org.apache.kafka: INFO
-      org.springframework.kafka: INFO
 
 management:
   endpoints:
     web:
       exposure:
         include: health,metrics
+
+logging:
+  level:
+    org.apache.kafka: OFF
+    org.springframework.kafka: OFF
+    org.apache.kafka.clients.consumer.internals: WARN
+    org.apache.kafka.clients.NetworkClient: WARN

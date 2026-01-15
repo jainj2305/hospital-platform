@@ -1,37 +1,64 @@
 package com.hospital.notification_service.consumer;
 
-import com.hospital.notification_service.event.AppointmentEvent;
-import com.hospital.notification_service.event.BillGeneratedEvent;
-import com.hospital.notification_service.event.PaymentCompletedEvent;
-import com.hospital.notification_service.event.PaymentFailedEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hospital.notification_service.event.*;
 import com.hospital.notification_service.service.NotificationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 public class NotificationListener {
 
-    @Autowired
-    private NotificationService service;
+    private final NotificationService service;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public NotificationListener(NotificationService service) {
+        this.service = service;
+    }
 
     @KafkaListener(topics = "appointment.booked", groupId = "notification-group")
-    public void handleAppointmentBooked(AppointmentEvent event) {
-        service.sendAppointmentNotification(event);
+    public void handleAppointmentBooked(String message) {
+        try {
+            AppointmentEvent event =
+                    objectMapper.readValue(message, AppointmentEvent.class);
+            service.sendAppointmentNotification(event);
+        } catch (Exception e) {
+            log.error("Failed to process appointment.booked event: {}", message, e);
+        }
     }
 
     @KafkaListener(topics = "bill.generated", groupId = "notification-group")
-    public void handleBillGenerated(BillGeneratedEvent event) {
-        service.sendBillNotification(event);
+    public void handleBillGenerated(String message) {
+        try {
+            BillGeneratedEvent event =
+                    objectMapper.readValue(message, BillGeneratedEvent.class);
+            service.sendBillNotification(event);
+        } catch (Exception e) {
+            log.error("Failed to process bill.generated event: {}", message, e);
+        }
     }
 
     @KafkaListener(topics = "payment.completed", groupId = "notification-group")
-    public void handlePaymentCompleted(PaymentCompletedEvent event) {
-        service.sendPaymentSuccess(event);
+    public void handlePaymentCompleted(String message) {
+        try {
+            PaymentCompletedEvent event =
+                    objectMapper.readValue(message, PaymentCompletedEvent.class);
+            service.sendPaymentSuccess(event);
+        } catch (Exception e) {
+            log.error("Failed to process payment.completed event: {}", message, e);
+        }
     }
 
     @KafkaListener(topics = "payment.failed", groupId = "notification-group")
-    public void handlePaymentFailed(PaymentFailedEvent event) {
-        service.sendPaymentFailure(event);
+    public void handlePaymentFailed(String message) {
+        try {
+            PaymentFailedEvent event =
+                    objectMapper.readValue(message, PaymentFailedEvent.class);
+            service.sendPaymentFailure(event);
+        } catch (Exception e) {
+            log.error("Failed to process payment.failed event: {}", message, e);
+        }
     }
 }
